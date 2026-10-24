@@ -92,6 +92,7 @@
   "everyone": "Everyone",
   "pin_note": "Pin to the board",
   "child_visible": "Visible in child spaces and kitchen board",
+  "kitchen_visible": "Visible on the kitchen board",
   "approval": "Parent approval needed",
   "approve": "Approve",
   "awaiting_approval": "Waiting for a grown-up",

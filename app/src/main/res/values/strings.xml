@@ -92,6 +92,7 @@
     <string name="everyone">Everyone</string>
     <string name="pin_note">Pin to the board</string>
     <string name="child_visible">Visible in child spaces and kitchen board</string>
+    <string name="kitchen_visible">Visible on the kitchen board</string>
     <string name="approval">Parent approval needed</string>
     <string name="approve">Approve</string>
     <string name="awaiting_approval">Waiting for a grown-up</string>

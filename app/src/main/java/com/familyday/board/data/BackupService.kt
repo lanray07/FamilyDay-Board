@@ -62,7 +62,7 @@ class BackupService(private val db: BoardDatabase, private val gate: ParentGate)
             members.forEach { dao.put(it) }; entries.forEach { dao.put(it) }
             true
         }
-        if (applied) gate.lock()
+        if (applied && gate.session.value?.board != true) gate.lock()
         return applied
     }
     private fun encode(e: Entry) = JSONObject().apply {

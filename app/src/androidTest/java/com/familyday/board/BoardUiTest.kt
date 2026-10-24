@@ -77,9 +77,13 @@ class BoardUiTest {
                 require(name.matches(Regex("[a-z0-9-]+")))
                 val path = "/sdcard/Pictures/FamilyDay-screenshots/$name.png"
                 // The test shell owns shared evidence on API 28; production needs no storage permission.
-                val descriptor = instrumentation.uiAutomation.executeShellCommand("mkdir -p /sdcard/Pictures/FamilyDay-screenshots && screencap -p $path && test -s $path && echo captured")
-                val result = ParcelFileDescriptor.AutoCloseInputStream(descriptor).bufferedReader().use { it.readText() }
-                check(result.trim() == "captured") { "Screenshot export failed: $result" }
+                fun shell(command: String): String {
+                    val descriptor = instrumentation.uiAutomation.executeShellCommand(command)
+                    return ParcelFileDescriptor.AutoCloseInputStream(descriptor).bufferedReader().use { it.readText() }
+                }
+                shell("mkdir -p /sdcard/Pictures/FamilyDay-screenshots")
+                shell("screencap -p $path")
+                check(shell("ls $path").trim() == path) { "Screenshot export failed" }
             }
         } finally { bitmap.recycle() }
     }
@@ -108,6 +112,9 @@ class BoardUiTest {
         compose.onNodeWithText("Lists", useUnmergedTree = false).performClick(); screenshot("04-lists-landscape")
         compose.onNodeWithContentDescription("Kitchen board").performClick(); screenshot("05-kitchen-landscape")
         compose.onNodeWithText("Leave kitchen board").performClick()
+        compose.onNodeWithText("Parent PIN (6–12 digits)").performTextInput("123456")
+        compose.onNodeWithText("Continue").performClick()
+        compose.waitUntil(10000) { compose.onAllNodesWithContentDescription("Kitchen board").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("Today", useUnmergedTree = false).performClick()
         compose.activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         settle(); screenshot("06-dashboard-portrait")

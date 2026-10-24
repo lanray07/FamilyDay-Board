@@ -64,13 +64,13 @@ import java.util.Locale
                             LinearProgressIndicator(progress = { done.toFloat() / chores.size }, Modifier.fillMaxWidth())
                             chores.forEach { e -> EntryRow(e, state.members, date, adult && !kitchen, kitchen,
                                 onToggle = { if (!kitchen) vm.action { vm.repo.complete(e.id, date) } }, onEdit = { edit(e) },
-                                onApprove = { vm.action { vm.repo.approve(e.id, date) } }) }
+                                onApprove = { vm.action { vm.repo.approve(e.id, date) } }, interactive = !kitchen) }
                         }
                     }
                     if (adult) BoardCard(stringResource(R.string.shopping_summary), Icons.Default.ShoppingBasket, Modifier.fillMaxWidth()) {
                         if (items.isEmpty()) EmptyState(R.string.empty_items)
                         items.take(5).forEach { e -> EntryRow(e, state.members, date, !kitchen, kitchen,
-                            onToggle = { if (!kitchen) vm.action { vm.repo.complete(e.id, date) } }, onEdit = { edit(e) }) }
+                            onToggle = { if (!kitchen) vm.action { vm.repo.complete(e.id, date) } }, onEdit = { edit(e) }, interactive = !kitchen) }
                     }
                 }
             }

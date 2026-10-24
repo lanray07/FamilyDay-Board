@@ -71,13 +71,13 @@ fun formatTime(millis: Long, zone: String) = Instant.ofEpochMilli(millis).atZone
 }
 
 @Composable fun EntryRow(e: Entry, members: List<Member>, date: LocalDate, adult: Boolean, large: Boolean = false,
-    onToggle: () -> Unit = {}, onEdit: () -> Unit = {}, onApprove: () -> Unit = {}) {
+    onToggle: () -> Unit = {}, onEdit: () -> Unit = {}, onApprove: () -> Unit = {}, interactive: Boolean = true) {
     val assigned = members.filter { e.assignedOn(it.id, date) }
     Row(Modifier.fillMaxWidth().clip(MaterialTheme.shapes.small)
         .then(if (adult) Modifier.clickable(onClick = onEdit) else Modifier).padding(vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         if (e.kind in listOf(Kind.CHORE, Kind.ITEM) || (e.kind == Kind.NOTE && adult)) {
-            Checkbox(e.completed(date), { onToggle() }, Modifier.size(if (large) 56.dp else 48.dp))
+            Checkbox(e.completed(date), { onToggle() }, Modifier.size(if (large) 56.dp else 48.dp), enabled = interactive)
         } else {
             Box(Modifier.width(4.dp).height(if (large) 56.dp else 40.dp).clip(CircleShape)
                 .background(assigned.firstOrNull()?.let { MemberColours[it.color.mod(6)] } ?: MaterialTheme.colorScheme.primary))

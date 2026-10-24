@@ -6,8 +6,8 @@ import java.util.UUID
 enum class Kind { EVENT, NOTE, CHORE, LIST, ITEM }
 enum class Repeat { NONE, DAILY, WEEKLY, MONTHLY, YEARLY }
 enum class Role { OWNER, PARENT, CARER, ADULT, CHILD }
-data class Session(val memberId: String, val role: Role, val expiresAt: Long = Long.MAX_VALUE) {
-    val adult get() = role != Role.CHILD && System.currentTimeMillis() < expiresAt
+data class Session(val memberId: String, val role: Role, val expiresAt: Long = Long.MAX_VALUE, val board: Boolean = false) {
+    val adult get() = !board && role != Role.CHILD && System.currentTimeMillis() < expiresAt
 }
 fun newId(): String = UUID.randomUUID().toString()
 

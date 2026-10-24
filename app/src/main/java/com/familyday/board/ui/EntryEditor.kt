@@ -102,6 +102,7 @@ import java.time.*
                         }
                     }
                     if (original.kind in listOf(Kind.NOTE, Kind.EVENT, Kind.CHORE)) SettingToggle(stringResource(R.string.child_visible), child) { child = it }
+                    if (original.kind == Kind.LIST) SettingToggle(stringResource(R.string.kitchen_visible), child) { child = it }
                     if (original.kind == Kind.NOTE) {
                         SettingToggle(stringResource(R.string.pin_note), pinned) { pinned = it }
                         Text(stringResource(R.string.expires))

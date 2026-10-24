@@ -80,6 +80,7 @@ class ParentGate(private val vault: SecureVault) {
         good
     }
     fun child(id: String) { state.value = Session(id, Role.CHILD) }
+    fun presentBoard() { requireAdult(); state.value = Session("", Role.ADULT, board = true) }
     fun lock() { state.value = null }
     fun requireAdult() { check(state.value?.adult == true) { "adult_required" } }
     fun reset() { requireAdult(); vault.clear(); state.value = null }

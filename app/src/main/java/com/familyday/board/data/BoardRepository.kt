@@ -6,24 +6,29 @@ import com.familyday.board.security.ParentGate
 import kotlinx.coroutines.flow.*
 import java.time.*
 
+/** The same policy is applied before emission and synchronously when a UI session changes. */
+fun List<Entry>.visibleTo(session: Session?): List<Entry> {
+    if (session?.adult == true) return this
+    if (session?.board == true) {
+        val publicLists = filter { it.kind == Kind.LIST && it.childVisible }.map { it.id }.toSet()
+        return filter { it.childVisible && (it.kind != Kind.ITEM || it.parentId in publicLists) }
+    }
+    if (session?.role != Role.CHILD) return emptyList()
+    return filter { it.childVisible && when (it.kind) {
+        Kind.EVENT -> it.memberIds.isBlank() || it.assigned(session.memberId)
+        Kind.CHORE -> it.assigned(session.memberId)
+        Kind.NOTE -> true
+        else -> false
+    } }
+}
+
 class BoardRepository(private val db: BoardDatabase, private val gate: ParentGate) {
     private val dao = db.boardDao()
     val household = dao.householdFlow()
     val members = dao.membersFlow()
     // Permission filtering happens before data reaches any child UI or voice action.
     val entries = combine(dao.entriesFlow(), gate.session) { all, s ->
-        when {
-            s?.adult == true -> all
-            s?.role == Role.CHILD -> all.filter {
-                it.childVisible && when (it.kind) {
-                    Kind.EVENT -> it.memberIds.isBlank() || it.assigned(s.memberId)
-                    Kind.CHORE -> it.assigned(s.memberId)
-                    Kind.NOTE -> true
-                    else -> false
-                }
-            }
-            else -> emptyList()
-        }
+        all.visibleTo(s)
     }
     suspend fun createHousehold(name: String, owner: String, zone: String, weekStart: Int) {
         check(gate.configured && dao.household() == null)

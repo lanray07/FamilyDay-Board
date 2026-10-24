@@ -83,4 +83,19 @@ class RepositoryTest {
         val freshGate = ParentGate(SecureVault(ApplicationProvider.getApplicationContext(), "test_parent_vault"))
         assertTrue(runCatching { freshGate.unlock("123456", owner) }.isFailure)
     }
+    @Test fun kitchenBoardCanReadPublicContentButHasNoAdultPrivileges() = runBlocking {
+        val list = Entry(kind = Kind.LIST, title = "Private gifts", childVisible = false)
+        repo.save(list)
+        repo.save(Entry(kind = Kind.ITEM, title = "A surprise", parentId = list.id))
+        repo.save(Entry(kind = Kind.NOTE, title = "A public reminder", childVisible = true))
+        repo.save(Entry(kind = Kind.NOTE, title = "Private note", childVisible = false))
+        gate.presentBoard()
+        assertTrue(gate.session.value!!.board)
+        assertFalse(gate.session.value!!.adult)
+        assertEquals(Long.MAX_VALUE, gate.session.value!!.expiresAt)
+        assertEquals(listOf("A public reminder"), repo.entries.first().map { it.title })
+        assertTrue(runCatching { repo.addMember("Uninvited", Role.ADULT, 0) }.isFailure)
+        assertTrue(runCatching { repo.erase() }.isFailure)
+        assertTrue(runCatching { repo.save(Entry(kind = Kind.NOTE, title = "Forged")) }.isFailure)
+    }
 }

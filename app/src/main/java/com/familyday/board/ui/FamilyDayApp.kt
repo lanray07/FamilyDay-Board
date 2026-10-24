@@ -26,6 +26,7 @@ import com.familyday.board.MainActivity
 import com.familyday.board.R
 import com.familyday.board.data.Entry
 import com.familyday.board.data.CalendarImporter
+import com.familyday.board.data.visibleTo
 import com.familyday.board.domain.*
 import kotlinx.coroutines.*
 import org.koin.androidx.compose.koinViewModel
@@ -46,7 +47,7 @@ private enum class Page(val label: Int, val icon: ImageVector) {
     val activity = context as MainActivity
     var page by rememberSaveable { mutableStateOf(Page.TODAY) }
     var date by remember { mutableStateOf(LocalDate.now()) }
-    var kitchen by rememberSaveable { mutableStateOf(false) }
+    val kitchen = session?.board == true
     var keepAwake by rememberSaveable { mutableStateOf(false) }
     var editor by remember { mutableStateOf<Entry?>(null) }
     var editingActions by remember { mutableStateOf<Entry?>(null) }
@@ -64,12 +65,7 @@ private enum class Page(val label: Int, val icon: ImageVector) {
     var pendingItemTitle by remember { mutableStateOf("") }
     val adult = session?.adult == true
     // Recheck synchronously so a role switch can never show a cached adult frame.
-    val state = rawState.copy(entries = rawState.entries.filter { e -> adult || (session?.role == Role.CHILD && e.childVisible && when (e.kind) {
-        Kind.EVENT -> e.memberIds.isBlank() || e.assigned(session!!.memberId)
-        Kind.CHORE -> e.assigned(session!!.memberId)
-        Kind.NOTE -> true
-        else -> false
-    }) })
+    val state = rawState.copy(entries = rawState.entries.visibleTo(session))
     fun freshAuth(action: () -> Unit) { afterAuth = action; pinOpen = true }
     fun add(kind: Kind, parentId: String = "", title: String = "") {
         if (kind == Kind.ITEM && parentId.isBlank()) { pendingItemTitle = title; listPicker = true; return }
@@ -120,14 +116,17 @@ private enum class Page(val label: Int, val icon: ImageVector) {
         onDispose { activity.window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) }
     }
     LaunchedEffect(session) {
-        if (session == null || session?.role == Role.CHILD) { page = Page.TODAY; editor = null; editingActions = null; kitchen = false; voiceOpen = false; listPicker = false }
+        if (!adult) { page = Page.TODAY; editor = null; editingActions = null; voiceOpen = false; listPicker = false }
         while (session?.adult == true) {
             delay(1000)
             if (vm.session.value?.adult != true) { vm.gate.lock(); break }
         }
     }
     LaunchedEffect(state.household?.zone) { state.household?.let { date = LocalDate.now(ZoneId.of(it.zone)) } }
-    BackHandler(kitchen || page != Page.TODAY) { if (kitchen) kitchen = false else page = Page.TODAY }
+    LaunchedEffect(kitchen, state.household?.zone) {
+        while (kitchen) { date = LocalDate.now(ZoneId.of(state.household?.zone ?: ZoneId.systemDefault().id)); delay(60_000) }
+    }
+    BackHandler(kitchen || page != Page.TODAY) { if (kitchen) freshAuth { page = Page.TODAY } else page = Page.TODAY }
     FamilyDayTheme(dark) {
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             Column(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
@@ -138,7 +137,7 @@ private enum class Page(val label: Int, val icon: ImageVector) {
                     else -> {
                         if (kitchen) {
                             Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), verticalAlignment = Alignment.CenterVertically) {
-                                TextButton({ kitchen = false }) { Text(stringResource(R.string.exit_kitchen)) }
+                                TextButton({ freshAuth { page = Page.TODAY } }) { Text(stringResource(R.string.exit_kitchen)) }
                                 Spacer(Modifier.weight(1f))
                                 Text(stringResource(R.string.keep_awake), Modifier.weight(2f), style = MaterialTheme.typography.bodySmall)
                                 Switch(keepAwake, { keepAwake = it })
@@ -150,7 +149,7 @@ private enum class Page(val label: Int, val icon: ImageVector) {
                                     Text(stringResource(R.string.app_name), style = MaterialTheme.typography.titleLarge)
                                     Text(stringResource(R.string.local_only), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
-                                if (adult) IconButton({ kitchen = true }) { Icon(Icons.Default.Dashboard, stringResource(R.string.kitchen)) }
+                                if (adult) IconButton({ vm.gate.presentBoard() }) { Icon(Icons.Default.Dashboard, stringResource(R.string.kitchen)) }
                                 IconButton({ voiceOpen = true }) { Icon(Icons.Default.Mic, stringResource(R.string.voice)) }
                                 IconButton({ vm.gate.lock() }) { Icon(Icons.Default.Lock, stringResource(R.string.lock)) }
                             }
@@ -166,7 +165,7 @@ private enum class Page(val label: Int, val icon: ImageVector) {
                                     }
                                     Box(Modifier.weight(1f)) {
                                         when (if (kitchen) Page.TODAY else page) {
-                                            Page.TODAY -> Dashboard(state, vm, date, adult, kitchen, ::edit, { add(it) })
+                                            Page.TODAY -> Dashboard(state, vm, date, adult || kitchen, kitchen, ::edit, { add(it) })
                                             Page.CALENDAR -> CalendarScreen(state, adult, date, { date = it }, ::edit, { add(Kind.EVENT) }, { e, day -> vm.action { vm.repo.save(e.copy(excluded = (e.excluded.split(',').filter { it.isNotBlank() } + day.toString()).distinct().joinToString(","))) } })
                                             Page.CHORES -> ChoresScreen(state, vm, adult, date, { date = it }, ::edit, { add(Kind.CHORE) })
                                             Page.MESSAGES -> MessagesScreen(state, vm, adult, ::edit, { add(Kind.NOTE) })
