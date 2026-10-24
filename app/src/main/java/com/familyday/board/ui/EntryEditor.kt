@@ -51,7 +51,8 @@ import java.time.*
     var approval by remember { mutableStateOf(original.approvalRequired) }
     var stars by remember { mutableStateOf(original.stars.toString()) }
     var reminder by remember { mutableIntStateOf(original.reminderMinutes) }
-    var expires by remember { mutableStateOf(if (original.expires > 0) Instant.ofEpochMilli(original.expires).atZone(initialZone).toLocalDate().minusDays(1) else null) }
+    var expires by remember { mutableStateOf(if (original.expires > 0) Instant.ofEpochMilli(original.expires - 1).atZone(initialZone).toLocalDate() else null) }
+    var expiryEdited by remember { mutableStateOf(false) }
     var invalid by remember { mutableStateOf(false) }
     var pending by remember { mutableStateOf<Entry?>(null) }
     var overlaps by remember { mutableStateOf(emptyList<Entry>()) }
@@ -104,8 +105,8 @@ import java.time.*
                     if (original.kind == Kind.NOTE) {
                         SettingToggle(stringResource(R.string.pin_note), pinned) { pinned = it }
                         Text(stringResource(R.string.expires))
-                        DateButton(stringResource(R.string.date), expires ?: date) { expires = it }
-                        if (expires != null) TextButton({ expires = null }) { Text(stringResource(R.string.no_expiry)) }
+                        DateButton(stringResource(R.string.date), expires ?: date) { expires = it; expiryEdited = true }
+                        if (expires != null) TextButton({ expires = null; expiryEdited = true }) { Text(stringResource(R.string.no_expiry)) }
                     }
                     if (original.kind == Kind.CHORE) {
                         SettingToggle(stringResource(R.string.approval), approval) { approval = it }
@@ -129,7 +130,7 @@ import java.time.*
                             original.copy(title = title, notes = notes, category = category, memberIds = members.joinToString(","), zone = zone,
                                 start = if (timed) start else original.start, end = if (timed) end else original.end, allDay = allDay, repeat = repeat, every = every.toInt(), rotate = rotate,
                                 childVisible = child, pinned = pinned, approvalRequired = approval, stars = stars.toInt(), reminderMinutes = reminder,
-                                expires = expires?.plusDays(1)?.atStartOfDay(z)?.toInstant()?.toEpochMilli() ?: 0,
+                                expires = if (!expiryEdited) original.expires else expires?.plusDays(1)?.atStartOfDay(z)?.toInstant()?.toEpochMilli() ?: 0,
                                 author = original.author.ifBlank { state.members.firstOrNull { it.id == vm.session.value?.memberId }?.name.orEmpty() })
                         }
                         if (built.isFailure) invalid = true else {

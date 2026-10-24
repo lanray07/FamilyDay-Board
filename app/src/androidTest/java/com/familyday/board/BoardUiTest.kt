@@ -2,6 +2,11 @@ package com.familyday.board
 
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
+import android.content.ContentValues
+import android.os.Build
+import android.os.Environment
+import android.os.ParcelFileDescriptor
+import android.provider.MediaStore
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.platform.app.InstrumentationRegistry
@@ -58,8 +63,24 @@ class BoardUiTest {
     private fun screenshot(name: String) {
         settle()
         val instrumentation = InstrumentationRegistry.getInstrumentation()
-        val file = File(compose.activity.getExternalFilesDir(null), "screenshots/$name.png").apply { parentFile!!.mkdirs() }
-        instrumentation.uiAutomation.takeScreenshot().let { bitmap -> file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }; bitmap.recycle() }
+        val bitmap = instrumentation.uiAutomation.takeScreenshot()
+        try {
+            if (Build.VERSION.SDK_INT >= 29) {
+                val values = ContentValues().apply {
+                    put(MediaStore.Images.Media.DISPLAY_NAME, "$name.png")
+                    put(MediaStore.Images.Media.MIME_TYPE, "image/png")
+                    put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/FamilyDay-screenshots")
+                }
+                val resolver = compose.activity.contentResolver
+                val uri = checkNotNull(resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values))
+                checkNotNull(resolver.openOutputStream(uri)).use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+            } else {
+                val descriptor = instrumentation.uiAutomation.executeShellCommand("pm grant com.familyday.board android.permission.WRITE_EXTERNAL_STORAGE")
+                ParcelFileDescriptor.AutoCloseInputStream(descriptor).use { it.readBytes() }
+                val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "FamilyDay-screenshots/$name.png").apply { parentFile!!.mkdirs() }
+                file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+            }
+        } finally { bitmap.recycle() }
     }
     @Test fun adultCanCreateNoteAndChildSeesOnlyAllowedRecords() {
         compose.waitUntil(15000) { compose.onAllNodesWithText("Hello, The Willow household").fetchSemanticsNodes().isNotEmpty() }
@@ -98,7 +119,7 @@ class BoardUiTest {
         val start = day.atStartOfDay(zone).toInstant().toEpochMilli()
         val end = day.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()
         val event = Entry(kind = Kind.EVENT, title = "A whole family day", start = start, end = end, zone = zone.id, allDay = true)
-        val note = Entry(kind = Kind.NOTE, title = "A note for today", expires = end)
+        val note = Entry(kind = Kind.NOTE, title = "A note for today", expires = end, zone = zone.id)
         runBlocking { koin.get<BoardRepository>().save(event); koin.get<BoardRepository>().save(note) }
         compose.waitUntil(15000) { compose.onAllNodesWithText("Hello, The Willow household").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("Calendar").performClick()

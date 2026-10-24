@@ -3,5 +3,5 @@
 set -uo pipefail
 ./gradlew connectedDebugAndroidTest --console=plain
 test_status=$?
-adb pull /sdcard/Android/data/com.familyday.board/files/screenshots captures || true
+adb pull /sdcard/Pictures/FamilyDay-screenshots captures || true
 exit "$test_status"
