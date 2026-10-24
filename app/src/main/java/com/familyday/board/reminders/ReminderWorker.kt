@@ -34,7 +34,7 @@ class ReminderWorker(context: Context, params: WorkerParameters) : CoroutineWork
             val date = Instant.ofEpochMilli(now).atZone(ZoneId.of(e.zone)).toLocalDate()
             // Tomorrow matters when a reminder falls before the occurrence's local date.
             listOf(date.minusDays(1), date, date.plusDays(1)).forEach { day ->
-                if (e.on(day) && !e.completed(day)) {
+                if (Schedule.occurs(e.start, e.zone, e.repeat, day, e.excluded.split(',').toSet(), e.every) && !e.completed(day)) {
                     val due = Schedule.occurrenceStart(e.start, e.zone, day) - e.reminderMinutes * 60_000L
                     val key = "${e.id}:$day:${e.version}"
                     if (now >= due && now - due < 86_400_000 && !delivered.getBoolean(key, false)) {

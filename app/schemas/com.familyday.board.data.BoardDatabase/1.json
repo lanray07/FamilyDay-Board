@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "7a47fa75c2914fe6a93da1f1a01bf0df",
+    "identityHash": "13651be79b9c4b00281e9a957ea8638b",
     "entities": [
       {
         "tableName": "households",
@@ -84,7 +84,7 @@
       },
       {
         "tableName": "entries",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `kind` TEXT NOT NULL, `title` TEXT NOT NULL, `notes` TEXT NOT NULL, `category` TEXT NOT NULL, `memberIds` TEXT NOT NULL, `parentId` TEXT NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `zone` TEXT NOT NULL, `allDay` INTEGER NOT NULL, `repeat` TEXT NOT NULL, `every` INTEGER NOT NULL, `rotate` INTEGER NOT NULL, `excluded` TEXT NOT NULL, `completedDates` TEXT NOT NULL, `done` INTEGER NOT NULL, `pinned` INTEGER NOT NULL, `childVisible` INTEGER NOT NULL, `expires` INTEGER NOT NULL, `approvalRequired` INTEGER NOT NULL, `approvedDates` TEXT NOT NULL, `stars` INTEGER NOT NULL, `position` INTEGER NOT NULL, `reminderMinutes` INTEGER NOT NULL, `author` TEXT NOT NULL, `updated` INTEGER NOT NULL, `version` INTEGER NOT NULL, `deleted` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `kind` TEXT NOT NULL, `title` TEXT NOT NULL, `notes` TEXT NOT NULL, `category` TEXT NOT NULL, `memberIds` TEXT NOT NULL, `source` TEXT NOT NULL, `parentId` TEXT NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `zone` TEXT NOT NULL, `allDay` INTEGER NOT NULL, `repeat` TEXT NOT NULL, `every` INTEGER NOT NULL, `rotate` INTEGER NOT NULL, `excluded` TEXT NOT NULL, `completedDates` TEXT NOT NULL, `done` INTEGER NOT NULL, `pinned` INTEGER NOT NULL, `childVisible` INTEGER NOT NULL, `expires` INTEGER NOT NULL, `approvalRequired` INTEGER NOT NULL, `approvedDates` TEXT NOT NULL, `stars` INTEGER NOT NULL, `position` INTEGER NOT NULL, `reminderMinutes` INTEGER NOT NULL, `author` TEXT NOT NULL, `updated` INTEGER NOT NULL, `version` INTEGER NOT NULL, `deleted` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -119,6 +119,12 @@
           {
             "fieldPath": "memberIds",
             "columnName": "memberIds",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -327,7 +333,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7a47fa75c2914fe6a93da1f1a01bf0df')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '13651be79b9c4b00281e9a957ea8638b')"
     ]
   }
 }

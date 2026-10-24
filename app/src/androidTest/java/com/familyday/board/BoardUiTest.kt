@@ -80,6 +80,7 @@ class BoardUiTest {
         compose.onNodeWithText("Lists", useUnmergedTree = false).performClick(); screenshot("04-lists-landscape")
         compose.onNodeWithContentDescription("Kitchen board").performClick(); screenshot("05-kitchen-landscape")
         compose.onNodeWithText("Leave kitchen board").performClick()
+        compose.onNodeWithText("Today", useUnmergedTree = false).performClick()
         compose.activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         settle(); screenshot("06-dashboard-portrait")
         compose.onNodeWithContentDescription("Lock board").performClick()

@@ -19,6 +19,8 @@ jobs:
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
       - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
       - run: chmod +x gradlew && ./gradlew assembleDebug assembleRelease lintDebug testDebugUnitTest --console=plain
       - uses: actions/setup-python@v5
         with:
