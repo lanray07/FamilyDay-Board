@@ -158,4 +158,17 @@ class BoardUiTest {
         compose.onNodeWithText(date).assertExists()
         compose.onNodeWithText("Saturday football").assertExists()
     }
+    @Test fun manualVoiceFallbackCanCreateANoteWithoutRecording() {
+        compose.waitUntil(15000) { compose.onAllNodesWithText("Hello, The Willow household").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithContentDescription("Voice assistant").performClick()
+        val speech = android.content.Intent(android.speech.RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+        if (speech.resolveActivity(compose.activity.packageManager) == null) {
+            compose.onNodeWithText("Start voice input").performClick()
+            compose.onNodeWithText("Voice recognition is unavailable on this device. Type your words below.").assertExists()
+        }
+        compose.onNodeWithText("Your words").performScrollTo().performTextInput("Pack the picnic blanket")
+        compose.onNodeWithText("Review as a note").performScrollTo().performClick()
+        compose.onNodeWithText("Save").performClick()
+        compose.waitUntil(10000) { runBlocking { koin.get<BoardDatabase>().boardDao().allEntries().any { it.title == "Pack the picnic blanket" && it.kind == Kind.NOTE } } }
+    }
 }

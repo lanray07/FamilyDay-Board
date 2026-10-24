@@ -8,6 +8,7 @@
   "keywords": ["family organiser", "family planner", "family calendar", "shared calendar", "chore chart", "shopping list", "household planner", "family reminders", "family message board", "daily routines"],
   "submission_limits_verified": false,
   "physical_fire_compatibility_verified": false,
+  "physical_fire_basic_validation": {"model": "KFTRWI", "api_level": 28, "passing_test_executions": 11, "scope": "One physical Fire HD 10; broader compatibility and extended device testing remain pending"},
   "commercial_billing_enabled": false,
   "supported_ui_languages": ["English"],
   "launch_price_candidates_internal_only": {"GBP_monthly": "3.99", "GBP_annual": "29.99", "trial_days_candidate": 7},

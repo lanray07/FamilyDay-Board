@@ -11,7 +11,7 @@ Open the repository in Android Studio with JDK 17 and Android SDK 35 installed. 
 adb install app/build/outputs/apk/debug/app-debug.apk
 ```
 
-On Windows use `gradlew.bat`. Minimum Android API: 26. Fire OS 7 / API 28 and Fire OS 8 / API 30 are intended targets; physical-device verification is still required. Fire OS 5 tablets are not supported.
+On Windows use `gradlew.bat`. Minimum Android API: 26. Eleven automated checks passed on a physical Fire HD 10 / KFTRWI / API 28. Fire OS 8 / API 30 is also an intended target; other physical models and extended device behaviour still require verification. Fire OS 5 tablets are not supported.
 
 Start with an empty household, choose a time zone and parent PIN, then add household members in Family. No email or cloud account is required. The parent PIN has no remote recovery: keep it safe and use explicit backups.
 

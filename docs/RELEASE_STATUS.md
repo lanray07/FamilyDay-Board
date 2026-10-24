@@ -4,7 +4,7 @@ This is an initial development implementation, not a claim that the entire maste
 
 | Area | Implementation | Remaining release work |
 | --- | --- | --- |
-| Native Android | Kotlin, Compose Material 3, MVVM, Room, Koin, DataStore, WorkManager | Physical Fire OS 7/8 testing, profiling, accessibility QA |
+| Native Android | Kotlin, Compose Material 3, MVVM, Room, Koin, DataStore, WorkManager; 11 checks passed on a physical KFTRWI / API 28 | Other physical Fire models/OS versions, extended battery/reminder testing, profiling and accessibility QA |
 | Onboarding | Three introduction panels, household, owner, PIN, zone and week start | In-app language selection after reviewed translations; profile avatar choices |
 | Today/kitchen | Responsive cards, quick actions, privacy filtering and optional awake display | Across-room readability and lower-memory device testing |
 | Calendar | Four views, assignments, recurrence/custom intervals, exceptions, all-day/multi-day plans, overlap warnings | Dedicated birthday/anniversary templates; complex recurrence rules; per-occurrence editing beyond skipping |
@@ -12,7 +12,7 @@ This is an initial development implementation, not a claim that the entire maste
 | Lists | Multiple lists, categories, edit, completion, reorder, duplication, sharing, shopping mode | Meal-plan-specific structure and advanced one-handed QA |
 | Chores | Recurrence, rotation, completion dates, approval, optional stars, weekly progress | Custom reward redemption and milestone management |
 | Family/child | Six profiles, adult role labels, simplified child space, service permissions | Independent adult identities, editable member roles and detailed per-child permission settings |
-| Voice | Runtime optional recognition, manual fallback, draft review, TTS | Fire engine verification and multilingual natural-language date parsing; no offline voice claim |
+| Voice | Runtime optional recognition, manual fallback, draft review, TTS; typed fallback verified on a Fire HD 10 without a recognizer | Actual TTS audio, other Fire speech engines and multilingual natural-language date parsing; no offline voice claim |
 | Sync | Opt-in HTTPS client, durable queue, immutable retries, backend, conflicts, invitations, revocation and deletion | Deploy and test HTTPS end-to-end; field-level merges and account recovery |
 | Notifications | Private local reminders, quiet hours and permission request | Fire battery/reboot/time-zone device QA; remote push and daily summaries |
 | Premium | Native Amazon SDK 3.0.9 adapter with verifier boundary | SKUs, app public key, RVS backend, purchase/restore UX, verified caching, cancellation/grace/expiry, free/premium limits and downgrade tests; disabled meanwhile |
