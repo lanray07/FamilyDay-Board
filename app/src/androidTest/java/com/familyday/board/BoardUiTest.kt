@@ -1,6 +1,7 @@
 package com.familyday.board
 
 import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.content.ContentValues
 import android.os.Build
@@ -105,6 +106,7 @@ class BoardUiTest {
     }
     @Test fun captureGenuineTabletScreensInBothOrientations() {
         compose.activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        compose.waitUntil(15000) { compose.activity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE }
         compose.waitUntil(15000) { compose.onAllNodesWithText("Hello, The Willow household").fetchSemanticsNodes().isNotEmpty() }
         screenshot("01-dashboard-landscape")
         compose.onNodeWithText("Calendar", useUnmergedTree = false).performClick(); screenshot("02-calendar-landscape")
@@ -117,6 +119,7 @@ class BoardUiTest {
         compose.waitUntil(10000) { compose.onAllNodesWithContentDescription("Kitchen board").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("Today", useUnmergedTree = false).performClick()
         compose.activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        compose.waitUntil(15000) { compose.activity.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT }
         settle(); screenshot("06-dashboard-portrait")
         compose.onNodeWithContentDescription("Lock board").performClick()
         compose.onNodeWithText("Sam’s space").performClick(); screenshot("07-child-portrait")
