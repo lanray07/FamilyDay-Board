@@ -4,7 +4,6 @@ import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.content.ContentValues
 import android.os.Build
-import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
 import androidx.compose.ui.test.*
@@ -75,10 +74,12 @@ class BoardUiTest {
                 val uri = checkNotNull(resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values))
                 checkNotNull(resolver.openOutputStream(uri)).use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
             } else {
-                val descriptor = instrumentation.uiAutomation.executeShellCommand("pm grant com.familyday.board android.permission.WRITE_EXTERNAL_STORAGE")
-                ParcelFileDescriptor.AutoCloseInputStream(descriptor).use { it.readBytes() }
-                val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "FamilyDay-screenshots/$name.png").apply { parentFile!!.mkdirs() }
-                file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+                require(name.matches(Regex("[a-z0-9-]+")))
+                val path = "/sdcard/Pictures/FamilyDay-screenshots/$name.png"
+                // The test shell owns shared evidence on API 28; production needs no storage permission.
+                val descriptor = instrumentation.uiAutomation.executeShellCommand("mkdir -p /sdcard/Pictures/FamilyDay-screenshots && screencap -p $path && test -s $path && echo captured")
+                val result = ParcelFileDescriptor.AutoCloseInputStream(descriptor).bufferedReader().use { it.readText() }
+                check(result.trim() == "captured") { "Screenshot export failed: $result" }
             }
         } finally { bitmap.recycle() }
     }
