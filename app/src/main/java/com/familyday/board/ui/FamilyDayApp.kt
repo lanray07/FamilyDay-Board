@@ -19,6 +19,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -47,6 +48,7 @@ private enum class Page(val label: Int, val icon: ImageVector) {
     val activity = context as MainActivity
     var page by rememberSaveable { mutableStateOf(Page.TODAY) }
     var date by remember { mutableStateOf(LocalDate.now()) }
+    var today by remember { mutableStateOf(LocalDate.now()) }
     val kitchen = session?.board == true
     var keepAwake by rememberSaveable { mutableStateOf(false) }
     var editor by remember { mutableStateOf<Entry?>(null) }
@@ -70,7 +72,8 @@ private enum class Page(val label: Int, val icon: ImageVector) {
     fun add(kind: Kind, parentId: String = "", title: String = "") {
         if (kind == Kind.ITEM && parentId.isBlank()) { pendingItemTitle = title; listPicker = true; return }
         val zone = state.household?.zone ?: ZoneId.systemDefault().id
-        val start = date.atTime(9, 0).atZone(ZoneId.of(zone)).toInstant().toEpochMilli()
+        val entryDate = if (page in listOf(Page.CALENDAR, Page.CHORES)) date else today
+        val start = entryDate.atTime(9, 0).atZone(ZoneId.of(zone)).toInstant().toEpochMilli()
         editor = Entry(kind = kind, title = title, parentId = parentId, start = start, end = start + 3600000, zone = zone,
             position = state.entries.count { it.parentId == parentId }, childVisible = kind != Kind.NOTE)
     }
@@ -123,8 +126,10 @@ private enum class Page(val label: Int, val icon: ImageVector) {
         }
     }
     LaunchedEffect(state.household?.zone) { state.household?.let { date = LocalDate.now(ZoneId.of(it.zone)) } }
-    LaunchedEffect(kitchen, state.household?.zone) {
-        while (kitchen) { date = LocalDate.now(ZoneId.of(state.household?.zone ?: ZoneId.systemDefault().id)); delay(60_000) }
+    LaunchedEffect(session != null, state.household?.zone) {
+        val zone = ZoneId.of(state.household?.zone ?: ZoneId.systemDefault().id)
+        today = LocalDate.now(zone)
+        while (session != null) { delay(60_000); today = LocalDate.now(zone) }
     }
     BackHandler(kitchen || page != Page.TODAY) { if (kitchen) freshAuth { page = Page.TODAY } else page = Page.TODAY }
     FamilyDayTheme(dark) {
@@ -161,11 +166,11 @@ private enum class Page(val label: Int, val icon: ImageVector) {
                                 Row(Modifier.weight(1f)) {
                                     if (wide) NavigationRail(containerColor = MaterialTheme.colorScheme.surface, modifier = Modifier.fillMaxHeight().verticalScroll(rememberScrollState())) {
                                         Spacer(Modifier.height(16.dp))
-                                        pages.forEach { p -> NavigationRailItem(selected = page == p, onClick = { page = p }, icon = { Icon(p.icon, null) }, label = { Text(stringResource(p.label)) }, modifier = Modifier.padding(vertical = 4.dp)) }
+                                        pages.forEach { p -> NavigationRailItem(selected = page == p, onClick = { page = p }, icon = { Icon(p.icon, null) }, label = { Text(stringResource(p.label)) }, modifier = Modifier.padding(vertical = 4.dp).testTag("nav-${p.name}")) }
                                     }
                                     Box(Modifier.weight(1f)) {
                                         when (if (kitchen) Page.TODAY else page) {
-                                            Page.TODAY -> Dashboard(state, vm, date, adult || kitchen, kitchen, ::edit, { add(it) })
+                                            Page.TODAY -> Dashboard(state, vm, today, adult || kitchen, kitchen, ::edit, { add(it) })
                                             Page.CALENDAR -> CalendarScreen(state, adult, date, { date = it }, ::edit, { add(Kind.EVENT) }, { e, day -> vm.action { vm.repo.save(e.copy(excluded = (e.excluded.split(',').filter { it.isNotBlank() } + day.toString()).distinct().joinToString(","))) } })
                                             Page.CHORES -> ChoresScreen(state, vm, adult, date, { date = it }, ::edit, { add(Kind.CHORE) })
                                             Page.MESSAGES -> MessagesScreen(state, vm, adult, ::edit, { add(Kind.NOTE) })
@@ -185,7 +190,7 @@ private enum class Page(val label: Int, val icon: ImageVector) {
                                 if (!wide && !kitchen) {
                                     var more by remember { mutableStateOf(false) }
                                     NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
-                                        pages.take(4).forEach { p -> NavigationBarItem(page == p, { page = p }, { Icon(p.icon, null) }, label = { Text(stringResource(p.label)) }) }
+                                        pages.take(4).forEach { p -> NavigationBarItem(page == p, { page = p }, { Icon(p.icon, null) }, label = { Text(stringResource(p.label)) }, modifier = Modifier.testTag("nav-${p.name}")) }
                                         if (adult) {
                                             NavigationBarItem(page in pages.drop(4), { more = true }, { Icon(Icons.Default.MoreHoriz, null) }, label = { Text(stringResource(R.string.family)) })
                                             DropdownMenu(more, { more = false }) { pages.drop(4).forEach { p -> DropdownMenuItem({ Text(stringResource(p.label)) }, { page = p; more = false }) } }

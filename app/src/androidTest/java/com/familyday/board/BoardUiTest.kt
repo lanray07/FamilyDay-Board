@@ -145,4 +145,14 @@ class BoardUiTest {
         compose.waitUntil(10000) { runBlocking { koin.get<BoardDatabase>().boardDao().entry(note.id)!!.version > 1 } }
         assertEquals(end, runBlocking { koin.get<BoardDatabase>().boardDao().entry(note.id)!!.expires })
     }
+    @Test fun todayDoesNotInheritTheDateSelectedInTheCalendar() {
+        compose.waitUntil(15000) { compose.onAllNodesWithText("Hello, The Willow household").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag("nav-CALENDAR").performClick()
+        compose.onNodeWithText("Day").performClick()
+        compose.onNodeWithContentDescription("Next").performClick()
+        compose.onNodeWithTag("nav-TODAY").performClick()
+        val date = LocalDate.now(ZoneId.of("Europe/London")).format(java.time.format.DateTimeFormatter.ofPattern("EEEE, d MMMM", java.util.Locale.getDefault()))
+        compose.onNodeWithText(date).assertExists()
+        compose.onNodeWithText("Saturday football").assertExists()
+    }
 }
