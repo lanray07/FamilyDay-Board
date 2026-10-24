@@ -38,7 +38,7 @@ import java.time.*
     var zone by remember { mutableStateOf(original.zone) }
     val initialZone = ZoneId.of(original.zone)
     var date by remember { mutableStateOf(Instant.ofEpochMilli(original.start).atZone(initialZone).toLocalDate()) }
-    var endDate by remember { mutableStateOf(Instant.ofEpochMilli(original.end).atZone(initialZone).toLocalDate()) }
+    var endDate by remember { mutableStateOf(Instant.ofEpochMilli(original.end).atZone(initialZone).toLocalDate().let { if (original.allDay) it.minusDays(1) else it }) }
     var startTime by remember { mutableStateOf(Instant.ofEpochMilli(original.start).atZone(initialZone).toLocalTime()) }
     var endTime by remember { mutableStateOf(Instant.ofEpochMilli(original.end).atZone(initialZone).toLocalTime()) }
     var repeat by remember { mutableStateOf(original.repeat) }
@@ -51,7 +51,7 @@ import java.time.*
     var approval by remember { mutableStateOf(original.approvalRequired) }
     var stars by remember { mutableStateOf(original.stars.toString()) }
     var reminder by remember { mutableIntStateOf(original.reminderMinutes) }
-    var expires by remember { mutableStateOf(if (original.expires > 0) Instant.ofEpochMilli(original.expires).atZone(initialZone).toLocalDate() else null) }
+    var expires by remember { mutableStateOf(if (original.expires > 0) Instant.ofEpochMilli(original.expires).atZone(initialZone).toLocalDate().minusDays(1) else null) }
     var invalid by remember { mutableStateOf(false) }
     var pending by remember { mutableStateOf<Entry?>(null) }
     var overlaps by remember { mutableStateOf(emptyList<Entry>()) }
@@ -123,6 +123,7 @@ import java.time.*
                             val end = if (original.kind == Kind.CHORE) start + 3600000 else
                                 (if (allDay) endDate.plusDays(1).atStartOfDay(z) else endDate.atTime(endTime).atZone(z)).toInstant().toEpochMilli()
                             require(!timed || end > start)
+                            require(!timed || end - start <= 366L * 86_400_000)
                             require(stars.toInt() in 0..10)
                             require(every.toInt() in 1..365)
                             original.copy(title = title, notes = notes, category = category, memberIds = members.joinToString(","), zone = zone,
@@ -136,10 +137,14 @@ import java.time.*
                             overlaps = if (e.kind == Kind.EVENT) state.entries.filter { other ->
                                 if (other.kind != Kind.EVENT || other.id == e.id) false else {
                                     val shared = e.memberIds.isBlank() || other.memberIds.isBlank() || e.memberIds.split(',').any { it in other.memberIds.split(',') }
-                                    val day = Instant.ofEpochMilli(e.start).atZone(ZoneId.of(other.zone)).toLocalDate()
-                                    shared && listOf(day.minusDays(1), day, day.plusDays(1)).any { d ->
+                                    val otherZone = ZoneId.of(other.zone)
+                                    val span = java.time.temporal.ChronoUnit.DAYS.between(Instant.ofEpochMilli(other.start).atZone(otherZone).toLocalDate(), Instant.ofEpochMilli(other.end).atZone(otherZone).toLocalDate()).coerceIn(0, 366)
+                                    val first = Instant.ofEpochMilli(e.start).atZone(otherZone).toLocalDate().minusDays(span)
+                                    val last = Instant.ofEpochMilli(e.end).atZone(otherZone).toLocalDate()
+                                    shared && (0..java.time.temporal.ChronoUnit.DAYS.between(first, last)).any { offset ->
+                                        val d = first.plusDays(offset)
                                         val os = Schedule.occurrenceStart(other.start, other.zone, d)
-                                        other.on(d) && Schedule.overlaps(e.start, e.end, os, Schedule.occurrenceEnd(other.start, other.end, other.zone, d))
+                                        Schedule.occurs(other.start, other.zone, other.repeat, d, other.excluded.split(',').toSet(), other.every) && Schedule.overlaps(e.start, e.end, os, Schedule.occurrenceEnd(other.start, other.end, other.zone, d))
                                     }
                                 }
                             } else emptyList()

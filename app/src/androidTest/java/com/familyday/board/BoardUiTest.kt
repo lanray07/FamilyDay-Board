@@ -10,6 +10,7 @@ import com.familyday.board.domain.*
 import com.familyday.board.security.*
 import kotlinx.coroutines.runBlocking
 import org.junit.*
+import org.junit.Assert.assertEquals
 import org.koin.core.context.GlobalContext
 import java.io.File
 import java.time.*
@@ -49,6 +50,11 @@ class BoardUiTest {
         dao.clearEntries(); dao.clearMembers(); dao.clearHousehold(); dao.clearQueue()
     }
     private fun settle() { compose.waitForIdle(); Thread.sleep(600) }
+    private fun openBoard() {
+        // Compact layouts put Board in the overflow menu; child navigation includes it directly.
+        if (compose.onAllNodesWithText("Board").fetchSemanticsNodes().isEmpty()) compose.onNodeWithText("Family").performClick()
+        compose.onNodeWithText("Board").performClick()
+    }
     private fun screenshot(name: String) {
         settle()
         val instrumentation = InstrumentationRegistry.getInstrumentation()
@@ -57,7 +63,7 @@ class BoardUiTest {
     }
     @Test fun adultCanCreateNoteAndChildSeesOnlyAllowedRecords() {
         compose.waitUntil(15000) { compose.onAllNodesWithText("Hello, The Willow household").fetchSemanticsNodes().isNotEmpty() }
-        compose.onNodeWithText("Board", useUnmergedTree = false).performClick()
+        openBoard()
         compose.onNodeWithText("Add note").performClick()
         compose.onNodeWithText("Title").performTextInput("Bring your wellies")
         compose.onNodeWithText("Visible in child spaces and kitchen board").performScrollTo().performClick()
@@ -67,7 +73,7 @@ class BoardUiTest {
         compose.onNodeWithText("Sam’s space").performClick()
         compose.onAllNodesWithText("Private appointment").assertCountEquals(0)
         compose.onAllNodesWithText("Adults only note").assertCountEquals(0)
-        compose.onNodeWithText("Board").performClick()
+        openBoard()
         compose.onNodeWithText("Bring your wellies").assertExists()
         compose.onAllNodesWithText("Add note").assertCountEquals(0)
     }
@@ -85,5 +91,29 @@ class BoardUiTest {
         settle(); screenshot("06-dashboard-portrait")
         compose.onNodeWithContentDescription("Lock board").performClick()
         compose.onNodeWithText("Sam’s space").performClick(); screenshot("07-child-portrait")
+    }
+    @Test fun savingAnUnchangedAllDayEventAndExpiryRetainsTheirDates() {
+        val zone = ZoneId.of("Europe/London")
+        val day = LocalDate.now(zone)
+        val start = day.atStartOfDay(zone).toInstant().toEpochMilli()
+        val end = day.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()
+        val event = Entry(kind = Kind.EVENT, title = "A whole family day", start = start, end = end, zone = zone.id, allDay = true)
+        val note = Entry(kind = Kind.NOTE, title = "A note for today", expires = end)
+        runBlocking { koin.get<BoardRepository>().save(event); koin.get<BoardRepository>().save(note) }
+        compose.waitUntil(15000) { compose.onAllNodesWithText("Hello, The Willow household").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("Calendar").performClick()
+        compose.onNodeWithText("Day").performClick()
+        compose.onNodeWithText(event.title).performScrollTo().performClick()
+        compose.onNodeWithText("Edit").performClick()
+        compose.onNodeWithText("Save").performClick()
+        compose.onNodeWithText("Save both").performClick()
+        compose.waitUntil(10000) { runBlocking { koin.get<BoardDatabase>().boardDao().entry(event.id)!!.version > 1 } }
+        assertEquals(end, runBlocking { koin.get<BoardDatabase>().boardDao().entry(event.id)!!.end })
+        openBoard()
+        compose.onNodeWithText(note.title).performScrollTo().performClick()
+        compose.onNodeWithText("Edit").performClick()
+        compose.onNodeWithText("Save").performClick()
+        compose.waitUntil(10000) { runBlocking { koin.get<BoardDatabase>().boardDao().entry(note.id)!!.version > 1 } }
+        assertEquals(end, runBlocking { koin.get<BoardDatabase>().boardDao().entry(note.id)!!.expires })
     }
 }

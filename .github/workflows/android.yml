@@ -75,8 +75,7 @@ jobs:
           script: |
             adb shell wm size ${{ matrix.size }}
             adb shell wm density ${{ matrix.density }}
-            ./gradlew connectedDebugAndroidTest --console=plain
-            adb pull /sdcard/Android/data/com.familyday.board/files/screenshots captures
+            bash tools/tablet-tests.sh
       - uses: actions/upload-artifact@v4
         if: always()
         with:

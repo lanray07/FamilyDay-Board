@@ -2,7 +2,12 @@ import copy
 import tempfile
 import unittest
 import uuid
-from server import Store, ApiError
+import json
+import threading
+import urllib.request
+import urllib.error
+from http.server import ThreadingHTTPServer
+from server import Store, ApiError, Handler
 
 
 def snapshot(name="A home"):
@@ -72,6 +77,40 @@ class SyncTests(unittest.TestCase):
         self.store.erase(token)
         with self.assertRaises(ApiError):
             self.store.get(token)
+
+    def test_http_transport_authenticates_before_returning_household_data(self):
+        server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        server.store, server.rates, server.rate_lock = self.store, {}, threading.Lock()
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        url = f"http://127.0.0.1:{server.server_port}/v1/snapshot"
+        try:
+            with self.assertRaises(urllib.error.HTTPError) as error:
+                urllib.request.urlopen(url, timeout=5)
+            self.assertEqual(401, error.exception.code)
+            request = urllib.request.Request(url, data=json.dumps(packet()).encode(), method="PUT", headers={"Authorization": "Bearer " + self.a["token"], "Content-Type": "application/json"})
+            with urllib.request.urlopen(request, timeout=5) as response:
+                self.assertEqual(1, json.load(response)["version"])
+                self.assertEqual("no-store", response.headers["Cache-Control"])
+            with urllib.request.urlopen(urllib.request.Request(url, headers={"Authorization": "Bearer " + self.b["token"]}), timeout=5) as response:
+                self.assertIsNone(json.load(response)["snapshot"])
+        finally:
+            server.shutdown(); server.server_close(); thread.join(timeout=5)
+
+    def test_http_returns_conflict_without_overwriting_data(self):
+        self.store.put(self.a["token"], packet())
+        server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        server.store, server.rates, server.rate_lock = self.store, {}, threading.Lock()
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            request = urllib.request.Request(f"http://127.0.0.1:{server.server_port}/v1/snapshot", data=json.dumps(packet(0, snapshot("Stale"))).encode(), method="PUT", headers={"Authorization": "Bearer " + self.a["token"]})
+            with self.assertRaises(urllib.error.HTTPError) as error:
+                urllib.request.urlopen(request, timeout=5)
+            self.assertEqual(409, error.exception.code)
+            self.assertEqual("A home", json.load(error.exception)["snapshot"]["household"]["name"])
+        finally:
+            server.shutdown(); server.server_close(); thread.join(timeout=5)
 
 
 if __name__ == "__main__":
