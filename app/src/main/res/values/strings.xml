@@ -111,6 +111,7 @@
     <string name="reminders">Household reminders</string>
     <string name="private_reminder">Something is coming up. Open your family board to see it.</string>
     <string name="empty_events">A little breathing room. No plans here yet.</string>
+    <string name="no_plans">No plans</string>
     <string name="empty_chores">All clear here. Add a little job to get started.</string>
     <string name="empty_notes">A home for the little things you want everyone to know.</string>
     <string name="empty_lists">From groceries to school supplies, make your first list.</string>

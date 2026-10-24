@@ -123,6 +123,7 @@ import java.util.Locale
             TextButton({ setDate(LocalDate.now(ZoneId.of(state.household?.zone ?: ZoneId.systemDefault().id))) }) { Text(stringResource(R.string.today)) }
             IconButton({ setDate(when (view) { 1 -> date.plusWeeks(1); 2 -> date.plusMonths(1); else -> date.plusDays(1) }) }) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, stringResource(R.string.following)) }
         }
+        if (view == 1) WeekColumns(first, date, events, state.members, adult, edit, skip)
         if (view == 2) {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Row { (0..6).forEach { d -> Text(first.plusDays(d.toLong()).dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()), Modifier.weight(1f), style = MaterialTheme.typography.labelMedium) } }
@@ -142,7 +143,7 @@ import java.util.Locale
             }
         }
         val days = when (view) { 1 -> (0..6).map { first.plusDays(it.toLong()) }; 3 -> (0..29).map { date.plusDays(it.toLong()) }; else -> listOf(date) }
-        days.forEach { day ->
+        if (view != 1) days.forEach { day ->
             val plans = events.filter { it.on(day) }.sortedBy { Schedule.occurrenceStart(it.start, it.zone, day) }
             if (view != 3 || plans.isNotEmpty()) BoardCard(day.format(DateTimeFormatter.ofPattern("EEEE, d MMM", Locale.getDefault())), Icons.Default.CalendarToday, Modifier.fillMaxWidth()) {
                 if (plans.isEmpty()) EmptyState(R.string.empty_events)
@@ -153,6 +154,51 @@ import java.util.Locale
             }
         }
         if (view == 3 && events.none { e -> days.any { e.on(it) } }) EmptyState(R.string.empty_events)
+    }
+}
+
+@Composable private fun WeekColumns(first: LocalDate, selected: LocalDate, events: List<Entry>, members: List<Member>, adult: Boolean,
+    edit: (Entry) -> Unit, skip: (Entry, LocalDate) -> Unit) {
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val compact = maxWidth < 840.dp
+        val columnWidth = if (compact) 168.dp else (maxWidth - 48.dp) / 7
+        val scroll = rememberScrollState()
+        val density = androidx.compose.ui.platform.LocalDensity.current
+        LaunchedEffect(first, selected, compact) {
+            if (compact) {
+                withFrameNanos { }
+                val index = java.time.temporal.ChronoUnit.DAYS.between(first, selected).coerceIn(0, 6)
+                scroll.scrollTo(with(density) { ((columnWidth + 8.dp) * index.toFloat()).roundToPx() }.coerceAtMost(scroll.maxValue))
+            }
+        }
+        Row(Modifier.horizontalScroll(scroll).height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            (0..6).forEach { offset ->
+                val day = first.plusDays(offset.toLong())
+                val plans = events.filter { it.on(day) }.sortedBy { Schedule.occurrenceStart(it.start, it.zone, day) }
+                Surface(Modifier.width(columnWidth).fillMaxHeight().heightIn(min = 340.dp), shape = MaterialTheme.shapes.medium,
+                    color = if (day == selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface) {
+                    Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Text(day.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()), style = MaterialTheme.typography.labelLarge)
+                        Text(day.dayOfMonth.toString(), style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.primary)
+                        HorizontalDivider()
+                        if (plans.isEmpty()) Text(stringResource(R.string.no_plans), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        plans.forEach { e ->
+                            val people = members.filter { e.assigned(it.id) }
+                            val colour = people.firstOrNull()?.let { MemberColours[it.color.mod(6)] } ?: MaterialTheme.colorScheme.primary
+                            Surface(onClick = { if (adult) edit(e) }, shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surface) {
+                                Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Box(Modifier.fillMaxWidth().height(4.dp).background(colour, CircleShape))
+                                    Text(if (e.allDay) stringResource(R.string.all_day) else formatTime(Schedule.occurrenceStart(e.start, e.zone, day), e.zone), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                                    Text(e.title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                                    if (people.isNotEmpty()) Text(people.joinToString { it.name }, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    if (adult && e.repeat != Repeat.NONE) IconButton({ skip(e, day) }) { Icon(Icons.Default.EventBusy, stringResource(R.string.skip_date)) }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
