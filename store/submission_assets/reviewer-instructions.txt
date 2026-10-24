@@ -1,0 +1,11 @@
+FamilyDay Board 0.1.0
+
+No cloud account or login credentials are required. On first launch, create a household and choose your own 6-12 digit parent PIN. Keep that PIN for adult actions. Add family members from Family; a child profile does not need an email.
+
+Suggested review: create an event, create and complete a chore, add a list and item, post a note, choose child visibility, lock the board and open the child profile. Kitchen presentation is read-only; exiting requires the parent PIN. Settings includes explicit backup, restore and deletion controls.
+
+Core local tools work without network access. Connected mode is optional and requires a separately configured trusted HTTPS server; no publisher-hosted service is configured. On the tested Fire HD 10, a speech recognizer was unavailable and manual-input fallback was verified. TTS depends on available device engines.
+
+This build does not offer purchases, subscriptions, trials or advertisements. The six local member slots and multiple lists are available without payment.
+
+Verified: 11 physical Fire HD 10 / KFTRWI / API 28 checks, plus the recorded Android emulator, JVM and Python test suites. Other hardware, extended notification/battery behavior, accessibility and commerce validation remain pending.

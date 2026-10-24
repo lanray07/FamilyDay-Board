@@ -1,0 +1,121 @@
+{
+  "requirements_source": "https://developer.amazon.com/docs/app-submission/appstore-details.html",
+  "verified_date": "2026-10-24",
+  "screenshots_pixel_identical": true,
+  "files": [
+    {
+      "file": "familyday-icon-114.png",
+      "role": "tablet_icon_114",
+      "source": "app/src/main/res/drawable/ic_familyday.xml",
+      "width": 114,
+      "height": 114,
+      "mode": "RGBA",
+      "bytes": 1435,
+      "sha256": "5ff28982334df95ff7ec3ee0a96f6064fcf6a28e6bbc90cd48c0f0c0cb45c29d"
+    },
+    {
+      "file": "familyday-icon-512.png",
+      "role": "tablet_icon_512",
+      "source": "app/src/main/res/drawable/ic_familyday.xml",
+      "width": 512,
+      "height": 512,
+      "mode": "RGBA",
+      "bytes": 3597,
+      "sha256": "94dd8f7dbd442d681c65555aa4a8d9c1061251ea059a55a4eda39ab81bc4d19a"
+    },
+    {
+      "file": "familyday-promo-1024x500.png",
+      "role": "optional_promotion",
+      "source": "deterministic original brand composition; no screenshot or pricing claims",
+      "width": 1024,
+      "height": 500,
+      "mode": "RGB",
+      "bytes": 18171,
+      "sha256": "133984fce300bfab28a9a8461e88b822f44282d9d878bc31e14f58d886bdcad1"
+    },
+    {
+      "file": "01-dashboard-landscape.png",
+      "role": "genuine_screenshot",
+      "source": "store\\screenshots\\en-GB\\01-dashboard-landscape.png",
+      "source_bytes": 138913,
+      "pixel_sha256": "e69b0f357d61c79a155e5d3bb4437b4a45137f9daff13ef981c4297c3bf77d44",
+      "width": 1920,
+      "height": 1200,
+      "mode": "RGB",
+      "bytes": 133891,
+      "sha256": "254096890546a3c7ad1ad71c23793642281fb1b632861b917dfead9d6daa9c0b"
+    },
+    {
+      "file": "02-calendar-landscape.png",
+      "role": "genuine_screenshot",
+      "source": "store\\screenshots\\en-GB\\02-calendar-landscape.png",
+      "source_bytes": 98229,
+      "pixel_sha256": "bcd0b8a922783581e04276981627f0a1ff0ce1d041e3b88778f7a96cb4a3e7cc",
+      "width": 1920,
+      "height": 1200,
+      "mode": "RGB",
+      "bytes": 93538,
+      "sha256": "80d1887ee69a7e8e3e3af46820082d3d4508bd302751d2e8be5a7a51540c8fd5"
+    },
+    {
+      "file": "03-chores-landscape.png",
+      "role": "genuine_screenshot",
+      "source": "store\\screenshots\\en-GB\\03-chores-landscape.png",
+      "source_bytes": 81911,
+      "pixel_sha256": "3565fe9f5ff53687eea4ceb7f3865131977f820c2657c642af67afa65053a05f",
+      "width": 1920,
+      "height": 1200,
+      "mode": "RGB",
+      "bytes": 78266,
+      "sha256": "b1181ea74ef4d4f5bfd99f5fb1a675c789da85baddf02dbe95b44104edf06b09"
+    },
+    {
+      "file": "04-lists-landscape.png",
+      "role": "genuine_screenshot",
+      "source": "store\\screenshots\\en-GB\\04-lists-landscape.png",
+      "source_bytes": 89073,
+      "pixel_sha256": "fc173543fa169ec7e2a489c51067d80d826a84d2f06015d25396d22d73689322",
+      "width": 1920,
+      "height": 1200,
+      "mode": "RGB",
+      "bytes": 85257,
+      "sha256": "992a36715c4eb97956249891cadeec9ebda2cfc5e666a2d62dab2f177f268b4e"
+    },
+    {
+      "file": "05-kitchen-landscape.png",
+      "role": "genuine_screenshot",
+      "source": "store\\screenshots\\en-GB\\05-kitchen-landscape.png",
+      "source_bytes": 150466,
+      "pixel_sha256": "a357a1f66e6deb291cda31ad60ea27ba409d7447de1c4f0acba79237ec86eb7e",
+      "width": 1920,
+      "height": 1200,
+      "mode": "RGB",
+      "bytes": 145493,
+      "sha256": "035a74dbdf6bf61e7374718a6ccaa4456caabbb4bc297dbc000d0d40ab60622e"
+    },
+    {
+      "file": "06-dashboard-portrait.png",
+      "role": "genuine_screenshot",
+      "source": "store\\screenshots\\en-GB\\06-dashboard-portrait.png",
+      "source_bytes": 217678,
+      "pixel_sha256": "71309d516bace451a38d2db20d9d58cced7966f9ac9aa97e0ee80a76923e43b2",
+      "width": 1200,
+      "height": 1920,
+      "mode": "RGB",
+      "bytes": 210350,
+      "sha256": "cbcaec992381e0dd6df0afec4e568b30259906ef244a46cd31773e81066d348c"
+    },
+    {
+      "file": "07-child-portrait.png",
+      "role": "genuine_screenshot",
+      "source": "store\\screenshots\\en-GB\\07-child-portrait.png",
+      "source_bytes": 143850,
+      "pixel_sha256": "0fe2a944ed67e1d86f9535205df2b16418b6f2bfe84d6bca2fd897efe258a6a5",
+      "width": 1200,
+      "height": 1920,
+      "mode": "RGB",
+      "bytes": 138173,
+      "sha256": "b6af1270ed5c1abffcd5330346c0e4ef05313d8e0e4d7955ff3d9b5611bb6746"
+    }
+  ]
+}

@@ -4,13 +4,68 @@
   "subtitle": "Family Calendar, Chores & Lists",
   "tagline": "One shared space for everything your family needs.",
   "short_description": "Organise family calendars, chores, shopping lists and reminders in one private household space. Designed for Fire tablets.",
-  "full_description": "A calmer day starts together.\n\nFamilyDay Board brings everyday household planning to one shared tablet. Keep family schedules, chores, shopping lists and notes close at hand, even when the internet is unavailable.\n\nPLAN YOUR FAMILY CALENDAR\nChoose day, week, month or agenda views. Assign plans to family members, create repeating events and see a warning when plans overlap. You stay in control of which plans children can see.\n\nSHARE THE EVERYDAY JOBS\nBuild daily, weekly or monthly routines, take turns with chores and track each day’s progress. Parents can approve completed jobs and enable optional reward stars.\n\nMAKE SHOPPING SIMPLE\nCreate grocery, packing or school-supply lists. Group items into categories, check them off in shopping mode and keep using your lists offline.\n\nA PRIVATE FAMILY NOTICEBOARD\nPin a reminder, celebrate a little win or share something the household should remember. Choose which notes appear in child spaces. There are no public profiles or social feeds.\n\nA SPACE FOR CHILDREN\nChildren use a nickname and colour, with no email address. Their space shows approved plans, notes and assigned chores. Adult settings are protected by a parent PIN.\n\nAT HOME ON A TABLET\nA warm dashboard, readable cards, light and evening themes, and a large kitchen board make shared planning easier. Core local tools need no cloud registration and work offline.\n\nCan I organise my family calendar on one tablet? Yes: use member assignments and the shared calendar views. Can children help with chores? Yes: adults create profiles and choose visible chores. Does the shopping list work offline? Yes: household lists are saved locally.\n\nDevice speech and text-to-speech are optional and depend on available services. Local notifications may be delayed by device battery settings. Connected mode requires a separately configured trusted HTTPS server. This development edition does not offer purchases or subscriptions.",
-  "keywords": ["family organiser", "family planner", "family calendar", "shared calendar", "chore chart", "shopping list", "household planner", "family reminders", "family message board", "daily routines"],
-  "submission_limits_verified": false,
+  "full_description": "A calmer day starts together.\n\nFamilyDay Board brings everyday household planning to one shared tablet. Keep family schedules, chores, shopping lists and notes close at hand, even when the internet is unavailable.\n\nPlan your family calendar\nChoose day, week, month or agenda views. Assign plans to family members, create repeating events and see a warning when plans overlap. You stay in control of which plans children can see.\n\nShare the everyday jobs\nBuild daily, weekly or monthly routines, take turns with chores and track each day’s progress. Parents can approve completed jobs and enable optional reward stars.\n\nMake shopping simple\nCreate grocery, packing or school-supply lists. Group items into categories, check them off in shopping mode and keep using your lists offline.\n\nA private family noticeboard\nPin a reminder, celebrate a little win or share something the household should remember. Choose which notes appear in child spaces. There are no public profiles or social feeds.\n\nA space for children\nChildren use a nickname and colour, with no email address. Their space shows approved plans, notes and assigned chores. Adult settings are protected by a parent PIN.\n\nAt home on a tablet\nA warm dashboard, readable cards, light and evening themes, and a large kitchen board make shared planning easier. Core local tools need no cloud registration and work offline.\n\nCan I organise my family calendar on one tablet? Yes: use member assignments and the shared calendar views. Can children help with chores? Yes: adults create profiles and choose visible chores. Does the shopping list work offline? Yes: household lists are saved locally.\n\nDevice speech and text-to-speech are optional and depend on available services. Local notifications may be delayed by device battery settings. Connected mode requires a separately configured trusted HTTPS server. This development edition does not offer purchases or subscriptions.",
+  "keywords": [
+    "family organiser",
+    "family planner",
+    "family calendar",
+    "shared calendar",
+    "chore chart",
+    "shopping list",
+    "household planner",
+    "family reminders",
+    "family message board",
+    "daily routines"
+  ],
+  "submission_limits_verified": true,
   "physical_fire_compatibility_verified": false,
-  "physical_fire_basic_validation": {"model": "KFTRWI", "api_level": 28, "passing_test_executions": 11, "scope": "One physical Fire HD 10; broader compatibility and extended device testing remain pending"},
+  "physical_fire_basic_validation": {
+    "model": "KFTRWI",
+    "api_level": 28,
+    "passing_test_executions": 11,
+    "scope": "One physical Fire HD 10; broader compatibility and extended device testing remain pending"
+  },
   "commercial_billing_enabled": false,
-  "supported_ui_languages": ["English"],
-  "launch_price_candidates_internal_only": {"GBP_monthly": "3.99", "GBP_annual": "29.99", "trial_days_candidate": 7},
-  "pricing_note": "Candidates are not shown as actual prices or advertised trials. Use Amazon marketplace product data only after eligibility and configuration are verified."
+  "supported_ui_languages": [
+    "English"
+  ],
+  "launch_price_candidates_internal_only": {
+    "GBP_monthly": "3.99",
+    "GBP_annual": "29.99",
+    "trial_days_candidate": 7
+  },
+  "pricing_note": "Candidates are not shown as actual prices or advertised trials. Use Amazon marketplace product data only after eligibility and configuration are verified.",
+  "verified_submission_limits": {
+    "title_characters": 200,
+    "long_description_characters": 4000,
+    "short_description_bytes": 2000,
+    "feature_bullet_count": [
+      3,
+      5
+    ],
+    "screenshots_count": [
+      3,
+      10
+    ],
+    "small_icon": [
+      114,
+      114
+    ],
+    "large_icon": [
+      512,
+      512
+    ],
+    "promotion": [
+      1024,
+      500
+    ],
+    "source": "https://developer.amazon.com/docs/app-submission/appstore-details.html"
+  },
+  "feature_bullets": [
+    "Keep family plans together with day, week, month and agenda calendar views.",
+    "Share recurring chores, rotate assignments and enable optional parent approval and reward stars.",
+    "Create shopping and household lists with categories, checkboxes and an easy shopping mode.",
+    "Use PIN-protected adult controls and child profiles without email accounts.",
+    "Keep core plans, lists and notes available offline, with a large kitchen board and explicit backups."
+  ]
 }
