@@ -1,0 +1,49 @@
+{
+  "status": "genuine_app_captures_with_draft_marketing_copy",
+  "locale": "en-GB",
+  "device_locale": "en-US; English source interface, Europe/London household time zone; date/time formatting follows the device",
+  "app_version": "0.1.0",
+  "capture_source": "https://github.com/lanray07/FamilyDay-Board/actions/runs/40096767094",
+  "source_commit": "ac6e0340816fae39fe58fb66f04898cc3cec1e10",
+  "device": "Android API 35 emulator, 1920x1200 at 240 dpi; not a physical Fire tablet",
+  "household_data": "Fictional test household only",
+  "image_processing": "None; native screenshots copied without image edits. Headline text is separate draft copy.",
+  "submission_specifications_verified": false,
+  "screens": [
+    {
+      "file": "en-GB/01-dashboard-landscape.png",
+      "headline": "Your Family, Organised",
+      "subheadline": "One place for calendars, chores and reminders"
+    },
+    {
+      "file": "en-GB/02-calendar-landscape.png",
+      "headline": "One Shared Family Calendar",
+      "subheadline": "Keep everyone’s plans together"
+    },
+    {
+      "file": "en-GB/03-chores-landscape.png",
+      "headline": "Make Family Chores Easier",
+      "subheadline": "Build simple routines for everyone"
+    },
+    {
+      "file": "en-GB/04-lists-landscape.png",
+      "headline": "A Little Less to Remember",
+      "subheadline": "Take your household lists with you, even offline"
+    },
+    {
+      "file": "en-GB/05-kitchen-landscape.png",
+      "headline": "A Home for the Day Ahead",
+      "subheadline": "Bring the family board to your kitchen"
+    },
+    {
+      "file": "en-GB/06-dashboard-portrait.png",
+      "headline": "At Home in Any Orientation",
+      "subheadline": "A shared planner designed around your tablet"
+    },
+    {
+      "file": "en-GB/07-child-portrait.png",
+      "headline": "Their Own Little Corner",
+      "subheadline": "The plans and jobs you choose to share"
+    }
+  ]
+}

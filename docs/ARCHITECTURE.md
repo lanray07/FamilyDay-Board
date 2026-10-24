@@ -16,6 +16,8 @@ PIN derivation uses PBKDF2-HMAC-SHA256, a random 32-byte salt and 210,000 iterat
 
 Android backup and device transfer are excluded. Explicit portable backups contain readable JSON and exclude the PIN, device credentials and sessions. App database encryption is provided by the device's app sandbox and storage encryption; the Room database is not independently encrypted. The device owner can uninstall the app or access system settings: child mode is not an operating-system kiosk or device-management boundary.
 
+Kitchen presentation is a separate read-only session with no adult privileges. It displays only approved public entries, excludes items whose parent list is private, advances the displayed date at midnight, and requires a fresh parent PIN to return to adult navigation. Its optional awake display can stay active without extending an adult administration session. Backgrounding the application still locks it.
+
 ## Connected mode
 
 No endpoint is configured by default. An adult explicitly chooses a trusted HTTPS server and stores a per-device token in the encrypted vault. WorkManager synchronises approximately every 15 minutes when connectivity is available; adults can also request a foreground sync. No Google push service is used.

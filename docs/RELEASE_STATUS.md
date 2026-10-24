@@ -19,6 +19,8 @@ This is an initial development implementation, not a claim that the entire maste
 | Localisation | Externalised strings/plurals, locale dates, draft/validation/review workflow | Human-reviewed translations in all priority languages, store translation and layout QA |
 | Store | Accurate draft English metadata, screenshot capture tests | Review current console limits, final branding/screenshots, privacy policy, content rating, signing, Live App Testing and submission |
 
+The current portable restore limit is 5 MB of JSON; sync responses are limited to 5.5 MB. Large-history archival and multi-part export have not been implemented. Preserve local data and check backup size before relying on a portable restore. Conflict resolution applies to a whole household snapshot, rather than a field-level merge.
+
 All six local member slots and multiple lists are currently usable without payment. This is deliberate development behaviour and must not be sold as a finished subscription product. No premium expiry can delete data because this build has no commercial entitlement enforcement. Essential privacy/export/deletion controls are available to authenticated adults.
 
 ## Official references checked on 24 October 2026
